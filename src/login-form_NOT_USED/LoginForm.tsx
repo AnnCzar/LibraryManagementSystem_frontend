@@ -4,13 +4,16 @@ import { Button, TextField } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
+  const navigate = useNavigate();
   const onSubmit = useCallback(
     (values: { username: string; password: string }, formik: any) => {
-      console.log(values);
+      navigate("/mainwindowlibrarian");
+      console.log("/mainwindowlibrarian");
     },
-    [],
+    [navigate],
   );
 
   const validationSchema = useMemo(
