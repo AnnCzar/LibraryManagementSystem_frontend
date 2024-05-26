@@ -19,6 +19,11 @@ import { TableHead, TextField } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import AppBar from "@mui/material/AppBar";
+import HomeIcon from "@mui/icons-material/Home";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -332,6 +337,27 @@ export default function CustomPaginationActionsTable() {
           marginBottom: "20px",
         }}
       >
+        <AppBar className="app-bar" component="nav">
+          <Toolbar>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            >
+              Library
+            </Typography>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <Button
+                sx={{ color: "#fff" }}
+                component={Link}
+                to="/mainwindowlibrarian"
+              >
+                <HomeIcon />
+              </Button>
+            </Box>
+          </Toolbar>
+        </AppBar>
+
         <Formik
           initialValues={{ search: "" }}
           validationSchema={validationSchema}
@@ -344,6 +370,20 @@ export default function CustomPaginationActionsTable() {
                 variant="outlined"
                 label="Search"
                 name="search"
+                sx={{
+                  "& label": {
+                    color: "#808080", // Szary kolor dla etykiety (label) pola
+                  },
+                  "& input": {
+                    color: "#333", // Czarny kolor tekstu pola
+                  },
+                  "& input:hover": {
+                    color: "#666", // Ciemnoszary kolor tekstu podczas najechania
+                  },
+                  "& input:focus": {
+                    color: "#000", // Czarny kolor tekstu po kliknięciu
+                  },
+                }}
                 error={touched.search && Boolean(errors.search)}
                 helperText={touched.search && errors.search}
               />
@@ -375,15 +415,6 @@ export default function CustomPaginationActionsTable() {
                 )
               : filteredRows
             ).map((book) => (
-              // <TableRow key={book.id}>
-              //   <TableCell>{book.id}</TableCell>
-              //   <TableCell>{book.isbn}</TableCell>
-              //   <TableCell>{book.title}</TableCell>
-              //   <TableCell>{book.author}</TableCell>
-              //   <TableCell>{book.publisher}</TableCell>
-              //   <TableCell>{book.publishYear}</TableCell>
-              //   <TableCell>{book.numberCopy}</TableCell>
-              // </TableRow>
               <TableRow
                 key={book.id}
                 component={Link}

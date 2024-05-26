@@ -1,34 +1,65 @@
-/* styles.css */
+.reviews-table {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+    background-color: #0e3a48;
+    color: #b1a20f;
+}
 
-/* Stylizacja tytułu */
-h4 {
+.reviews-table h1 {
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    color: #98890b;
+    font-size: 3.5em;
+}
+
+.reviews-table .MuiOutlinedInput-root {
+    background-color: #e1dfdb;
+}
+
+.reviews-table .MuiFormLabel-root {
+    color: #000000;
+}
+
+.reviews-table .MuiInputBase-input {
     color: #333;
-    text-align: center;
-    margin-bottom: 20px;
 }
 
-/* Stylizacja papieru z recenzją */
-.paper {
-    padding: 20px;
-    margin: 10px auto;
-    max-width: 600px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Stylizacja tytułu recenzji */
-h6 {
+.reviews-table .MuiIconButton-root {
     color: #333;
-    margin-bottom: 10px;
 }
 
-/* Stylizacja treści recenzji */
-.body1 {
-    color: #666;
-    margin-bottom: 5px;
+.reviews-table .MuiTablePagination-caption {
+    color: #555;
 }
 
-/* Stylizacja daty recenzji */
-.body1:last-child {
-    font-style: italic;
+.reviews-table .MuiTablePagination-input {
+    color: #333;
+}
+
+.reviews-table .MuiTablePagination-actions button {
+    color: #333;
+}
+
+.reviews-table .MuiTablePagination-actions button:hover {
+    background-color: #ddd;
+}
+
+.reviews-table .MuiTableHead-root {
+    background-color: #ddd;
+}
+
+.reviews-table .MuiTableCell-head {
+    color: #000;
+}
+
+.reviews-table .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.app-bar {
+    background-color: #b1a20f !important;
 }

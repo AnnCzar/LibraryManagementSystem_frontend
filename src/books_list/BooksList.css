@@ -11,15 +11,18 @@
 }
 
 .books-list h1 {
-    color: #b1a20f; /* Kolor nagłówka */
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    color: #98890b; /* Kolor nagłówka */
+    font-size: 3.5em;
 }
 
 .books-list .MuiOutlinedInput-root {
-    background-color: #fff; /* Tło pola wyszukiwania */
+    background-color: #e1dfdb; /* Tło pola wyszukiwania */
 }
 
 .books-list .MuiFormLabel-root {
-    color: #b1a20f; /* Kolor etykiety pola wyszukiwania */
+    color: #000000; /* Kolor etykiety pola wyszukiwania */
 }
 
 .books-list .MuiInputBase-input {
@@ -56,4 +59,7 @@
 
 .books-list .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
     background-color: #f9f9f9; /* Tło co drugiego wiersza tabeli */
+}
+.app-bar {
+    background-color: #b1a20f !important;
 }

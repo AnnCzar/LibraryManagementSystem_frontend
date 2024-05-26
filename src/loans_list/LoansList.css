@@ -1,8 +1,67 @@
-.loans-list {
-    margin-top: 20px;
+
+.loans-list-container {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+    background-color: #0e3a48;
+    color: #b1a20f;
 }
 
-.loans-list button {
+.loans-list-container h1 {
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    color: #98890b;
+    font-size: 3.5em;
+}
+
+.loans-list-container .MuiOutlinedInput-root {
+    background-color: #e1dfdb;
+}
+
+.loans-list-container .MuiFormLabel-root {
+    color: #000000;
+}
+
+.loans-list-container .MuiInputBase-input {
+    color: #333;
+}
+
+.loans-list-container .MuiIconButton-root {
+    color: #333;
+}
+
+.loans-list-container .MuiTablePagination-caption {
+    color: #555;
+}
+
+.loans-list-container .MuiTablePagination-input {
+    color: #333;
+}
+
+.loans-list-container .MuiTablePagination-actions button {
+    color: #333;
+}
+
+.loans-list-container .MuiTablePagination-actions button:hover {
+    background-color: #ddd;
+}
+
+.loans-list-container .MuiTableHead-root {
+    background-color: #ddd;
+}
+
+.loans-list-container .MuiTableCell-head {
+    color: #000;
+}
+
+.loans-list-container .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.loans-list-container button {
     background-color: #1976d2;
     color: white;
     border: none;
@@ -12,6 +71,9 @@
     transition: background-color 0.3s ease;
 }
 
-.loans-list button:hover {
+.loans-list-container button:hover {
     background-color: #135ba1;
+}
+.app-bar {
+    background-color: #b1a20f !important;
 }

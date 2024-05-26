@@ -2,10 +2,8 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
-
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -14,14 +12,10 @@ import { Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   window?: () => Window;
 }
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const tileItems = [
   { text: "Książki", path: "/books" },
@@ -44,19 +38,10 @@ export default function DrawerAppBar(props: Props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box className="home-page-container">
       <CssBaseline />
-      <AppBar component="nav">
+      <AppBar className="app-bar" component="nav">
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             component="div"
@@ -97,6 +82,7 @@ export default function DrawerAppBar(props: Props) {
           {tileItems.map((tile) => (
             <Grid item xs={12} sm={6} md={4} lg={4} key={tile.text}>
               <Button
+                className="grid-button"
                 component={Link}
                 to={tile.path}
                 variant="contained"
@@ -106,6 +92,8 @@ export default function DrawerAppBar(props: Props) {
                   minHeight: 150,
                   display: "flex",
                   alignItems: "center",
+                  backgroundColor: "#a59d62" /* Kolor tła przycisku */,
+                  color: "#fff" /* Kolor tekstu przycisku */,
                   justifyContent: "center",
                   fontSize: "1.2rem",
                 }}

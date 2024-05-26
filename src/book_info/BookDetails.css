@@ -6,13 +6,13 @@
     gap: 2rem;
     align-items: center;
     background-color: #0e3a48; /* Tło strony */
-    color: #b1a20f; /* Kolor tekstu */
+    color: #b1a20f; /* kolor tekstu */
 }
 .books-list a {
-    color: inherit; /* Ensures links do not stand out from the rest of the text */
-    text-decoration: none; /* Removes underline from links */
+    color: inherit;
+    text-decoration: none;
 }
 
 .books-list a:hover {
-    background-color: #ddd; /* Adds a hover effect for better user feedback */
+    background-color: #ddd;
 }

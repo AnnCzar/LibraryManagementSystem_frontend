@@ -1,12 +1,55 @@
+
+
+.home-page-container {
+    display: flex;
+    padding-bottom: 17rem;
+    flex-direction: column;
+    align-items: center;
+    background-color: #295980; /* kolor tła */
+}
+
+.app-bar {
+    background-color: #b1a20f !important;
+}
+.title {
+    flex-grow: 1;
+}
+
+.form-container {
+    margin-top: 3rem;
+}
+
+.form-title {
+    color: #b1a20f; /* Kolor tytułu formularza */
+    padding: 2rem;
+    text-align: center;
+    font-style: oblique !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+}
+
 .login-form {
-    padding: 5rem;
+    padding-top: 2rem;
+    padding-bottom: 6rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 2rem;
+    gap: 2.5rem;
     align-items: center;
+    background-color: #f8f9fa; /* Kolor tła formularza */
+    border-radius: 10px; /* Zaokrąglenie rogów */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Cień */
+}
 
+.login-button{
+    background-color: #295980 !important;
+    color: white !important;
 }
-.books-list h1 {
-    color: #b1a20f; /* Kolor nagłówka */
+.login-button .MuiSvgIcon-root {
+    color: white !important;
 }
+.MuiMenu-paper {
+    padding: 5px 0; /* odstęp wewnątrz menu */
+}
+
