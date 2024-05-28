@@ -249,6 +249,7 @@ export default function LoansList() {
           )}
         </Formik>
       </Box>
+
       <TableContainer component={Paper}>
         <Table
           sx={{ minWidth: 500, margin: "auto" }}
