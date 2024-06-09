@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Typography,
   Box,
@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Grid,
-  Autocomplete,
   AppBar,
   Toolbar,
 } from "@mui/material";
@@ -15,68 +14,62 @@ import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import "./AddLoan.css";
-
-const books = [
-  {
-    id: 1,
-    isbn: 9783161484100,
-    title: "Władca Pierścieni",
-    author: "J.R.R. Tolkien",
-    publisher: "HarperCollins",
-    year: 1954,
-    rating: 5,
-  },
-  {
-    id: 2,
-    isbn: 9788376485863,
-    title: "Harry Potter i Kamień Filozoficzny",
-    author: "J.K. Rowling",
-    publisher: "Media Rodzina",
-    year: 1997,
-    rating: 10,
-  },
-];
-
-const users = [
-  { id: 1, username: "jdoe", email: "jdoe@example.com", name: "John Doe" },
-  {
-    id: 2,
-    username: "asmith",
-    email: "asmith@example.com",
-    name: "Alice Smith",
-  },
-];
+import { LoanDto } from "../api/dto/loan.dto";
+import { useApi } from "../api/ApiProvider";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object({
-  bookTitle: Yup.string().required("Wybierz tytuł książki"),
-  userName: Yup.string().required("Wybierz nazwę użytkownika"),
+  bookId: Yup.number().required("Wprowadź ID książki"),
+  userId: Yup.number().required("Wprowadź ID użytkownika"),
   endDate: Yup.date().nullable().required("Wybierz datę końcową"),
 });
 
 const AddLoanPage: React.FC = () => {
+  const { t } = useTranslation();
+  const apiClient = useApi();
   const formik = useFormik({
     initialValues: {
-      bookTitle: "",
-      userName: "",
-      endDate: null,
+      bookId: "",
+      userId: "",
+      endDate: null as Date | null,
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log("Dodano wypożyczenie:", values);
-      formik.resetForm();
+
+      const createLoanDto: LoanDto = {
+        book: values.bookId || undefined,
+        user: values.userId || undefined,
+        loanDate: new Date(),
+        loanEndDate: values.endDate || new Date(),
+      };
+
+      try {
+        const response = await apiClient.addLoan(createLoanDto);
+        if (response.statusCode == 201) {
+          console.log("Loan added successfully:", response.data);
+          formik.resetForm();
+        } else {
+          console.error("Failed to add loan:", response.statusCode);
+        }
+      } catch (error) {
+        console.error("Error adding loan:", error);
+      }
     },
   });
 
   return (
-    <div className="loan-page">
-      <Box
-        sx={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}
-      >
-        <AppBar className="app-bar" component="nav">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Library
-            </Typography>
+    <Box className="add-loan-container">
+      <AppBar className="app-bar" component="nav">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+          >
+            {t("library")}
+          </Typography>
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Button
               sx={{ color: "#fff" }}
               component={Link}
@@ -84,73 +77,75 @@ const AddLoanPage: React.FC = () => {
             >
               <HomeIcon />
             </Button>
-          </Toolbar>
-        </AppBar>
-      </Box>
-      <Box className="loan-form">
-        <Typography variant="h4" gutterBottom>
-          Dodaj Wypożyczenie
-        </Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-        <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Autocomplete
-                options={books.map((book) => book.title)}
-                value={formik.values.bookTitle}
-                onChange={(event, value) =>
-                  formik.setFieldValue("bookTitle", value || "")
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Tytuł książki"
-                    variant="outlined"
-                    error={
-                      formik.touched.bookTitle &&
-                      Boolean(formik.errors.bookTitle)
-                    }
-                    helperText={
-                      formik.touched.bookTitle && formik.errors.bookTitle
-                    }
-                  />
-                )}
-              />
+      <Box className="loan-page">
+        <Paper elevation={3} className="form-paper">
+          <Typography variant="h4" className="form-title">
+            {t("addLoan")}
+          </Typography>
+          <form onSubmit={formik.handleSubmit}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={8}>
+                <TextField
+                  id="bookId"
+                  label={t("bookId")}
+                  variant="outlined"
+                  fullWidth
+                  value={formik.values.bookId}
+                  onChange={formik.handleChange}
+                  error={formik.touched.bookId && Boolean(formik.errors.bookId)}
+                  helperText={formik.touched.bookId && formik.errors.bookId}
+                />
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  id="userId"
+                  label={t("userId")}
+                  variant="outlined"
+                  fullWidth
+                  value={formik.values.userId}
+                  onChange={formik.handleChange}
+                  error={formik.touched.userId && Boolean(formik.errors.userId)}
+                  helperText={formik.touched.userId && formik.errors.userId}
+                />
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  id="endDate"
+                  label={t("endDate")}
+                  type="date"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  fullWidth
+                  variant="outlined"
+                  value={
+                    formik.values.endDate
+                      ? formik.values.endDate.toISOString().substring(0, 10)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    formik.setFieldValue("endDate", new Date(e.target.value))
+                  }
+                  error={
+                    formik.touched.endDate && Boolean(formik.errors.endDate)
+                  }
+                  helperText={formik.touched.endDate && formik.errors.endDate}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <Button className="button-loan" fullWidth type="submit">
+                  {t("addLoan")}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Autocomplete
-                options={users.map((user) => user.name)}
-                value={formik.values.userName}
-                onChange={(event, value) =>
-                  formik.setFieldValue("userName", value || "")
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Nazwa użytkownika"
-                    variant="outlined"
-                    error={
-                      formik.touched.userName && Boolean(formik.errors.userName)
-                    }
-                    helperText={
-                      formik.touched.userName && formik.errors.userName
-                    }
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              Add data picker
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="contained" color="primary" type="submit">
-                Dodaj Wypożyczenie
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </Paper>
       </Box>
-    </div>
+    </Box>
   );
 };
 

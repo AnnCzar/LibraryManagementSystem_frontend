@@ -1,14 +1,27 @@
-
 .loans-list-container {
-    padding: 2rem;
+    /*padding: 2rem;*/
+    /*padding-bottom: 5rem;*/
+    padding-top: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 2rem;
     align-items: center;
-    background-color: #0e3a48;
-    color: #b1a20f;
+    background-color: #0e3a48; /* Tło strony */
+    color: #b1a20f; /* Kolor tekstu */
 }
+
+/* Reszta stylów pozostaje bez zmian */
+
+.loans-list-container .search-container {
+    padding-bottom: 3rem;
+    text-align: center; /* Wyśrodkowanie opcji wyszukiwania */
+}
+
+.loans-list-container .MuiTableContainer-root {
+    margin-top: 1rem; /* Odstęp od tabeli */
+}
+
 
 .loans-list-container h1 {
     padding-top: 5rem;
@@ -61,15 +74,15 @@
     background-color: #f9f9f9;
 }
 
-.loans-list-container button {
-    background-color: #1976d2;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+/*.loans-list-container button {*/
+/*    background-color: #1976d2;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    padding: 5px 10px;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.3s ease;*/
+/*}*/
 
 .loans-list-container button:hover {
     background-color: #135ba1;

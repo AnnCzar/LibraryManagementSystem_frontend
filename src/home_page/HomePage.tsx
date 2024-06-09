@@ -8,58 +8,66 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import * as yup from "yup";
 import { Formik, FormikHelpers } from "formik";
 import { TextField } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import { useApi } from "../api/ApiProvider";
+import { useTranslation } from "react-i18next";
 
-import "./HomePage.css"; // Importuj plik CSS
+import "./HomePage.css";
+
 interface FormValues {
   username: string;
   password: string;
 }
 
 function HomePage() {
-  // otwarte/zamkniete menu
-  // anchorEl przechowuje informacje o tym, czy menu jest otwarte czy zamknięte
+  const { t } = useTranslation();
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  // otwieranie menu
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  //zamykanie menu
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  // nawigacja do innej ścieżki
   const navigate = useNavigate();
+  const apiClient = useApi();
 
-  // Funkcja wywoływana po zatwierdzeniu formularza
   const onSubmit = useCallback(
-    (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
-      setSubmitting(false);
-      navigate("/mainwindowlibrarian");
-      console.log("/mainwindowlibrarian");
+    async (values: FormValues, formik: FormikHelpers<FormValues>) => {
+      apiClient.login(values).then((response) => {
+        if (response.statusCode === 201 && response.role === "ROLE_LIBRARIAN") {
+          navigate("/mainwindowlibrarian");
+        } else if (
+          response.role === "ROLE_READER" &&
+          response.statusCode === 201
+        ) {
+          navigate("/mainwindowreader");
+        } else {
+          formik.setFieldError("username", "Invalid username or password");
+        }
+      });
     },
-    [navigate],
+    [apiClient, navigate],
   );
 
-  // walidacja formularza
   const validationSchema = useMemo(
     () =>
       yup.object().shape({
-        username: yup.string().required("Pole nie może być puste"),
+        username: yup.string().required(t("Pole nie może być puste")),
         password: yup
           .string()
-          .required("Pole nie może być puste")
-          .min(5, "Hasło nie może być krótsze niż 5 znaków"),
+          .required(t("Pole nie może być puste"))
+          .min(5, t("Hasło nie może być krótsze niż 5 znaków")),
       }),
-    [],
+    [t],
   );
 
   return (
@@ -76,10 +84,10 @@ function HomePage() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" className="title">
-            Library
+            {t("library")}
           </Typography>
           <Button color="inherit" component={Link} to="/books">
-            Książki
+            {t("books")}
           </Button>
         </Toolbar>
       </AppBar>
@@ -88,8 +96,8 @@ function HomePage() {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleMenuClose}>Jak założyć konto?</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Kontakt</MenuItem>
+        <MenuItem onClick={handleMenuClose}>{t("howToCreateAccount")}</MenuItem>
+        <MenuItem onClick={handleMenuClose}>{t("contact")}</MenuItem>
       </Menu>
       <Box className="form-container">
         <Formik
@@ -111,12 +119,12 @@ function HomePage() {
           }) => (
             <form className="login-form" noValidate onSubmit={handleSubmit}>
               <Typography variant="h4" className="form-title">
-                Zaloguj się
+                {t("login")}
               </Typography>
               <TextField
                 id="username"
                 name="username"
-                label="Nazwa użytkownika"
+                label={t("username")}
                 variant="standard"
                 fullWidth
                 margin="normal"
@@ -129,7 +137,7 @@ function HomePage() {
               <TextField
                 id="password"
                 name="password"
-                label="Hasło"
+                label={t("password")}
                 variant="standard"
                 type="password"
                 fullWidth
@@ -148,7 +156,7 @@ function HomePage() {
                 disabled={!(isValid && dirty)}
                 fullWidth
               >
-                Zaloguj się
+                {t("login")}
               </Button>
             </form>
           )}

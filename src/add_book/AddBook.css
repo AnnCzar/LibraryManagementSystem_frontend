@@ -8,9 +8,11 @@
     background-color: #0e3a48 !important;
     color: #b1a20f;
 }
+
 .app-bar {
     background-color: #b1a20f !important;
 }
+
 .add-user-page {
     padding: 15rem;
     display: flex;
@@ -23,11 +25,11 @@
 }
 
 .form-paper {
-    padding-top: 10rem !important;
-    padding-bottom: 5rem !important;
+
+    padding-bottom: 3rem !important;
     width: 100%;
     max-width: 800px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: column !important;
+    justify-content: center !important;
 }

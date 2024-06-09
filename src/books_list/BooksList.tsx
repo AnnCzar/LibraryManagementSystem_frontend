@@ -24,6 +24,9 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AppBar from "@mui/material/AppBar";
 import HomeIcon from "@mui/icons-material/Home";
+import { useApi } from "../api/ApiProvider";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -105,201 +108,29 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function createData(
-  id: number,
-  isbn: number,
-  title: string,
-  author: string,
-  publisher: string,
-  publishYear: number,
-  numberCopy: number,
-) {
-  return { id, isbn, title, author, publisher, publishYear, numberCopy };
-}
-
-const books = [
-  createData(
-    1,
-    9783161484100,
-    "Władca Pierścieni",
-    "J.R.R. Tolkien",
-    "HarperCollins",
-    1954,
-    5,
-  ),
-  createData(
-    2,
-    9788376485863,
-    "Harry Potter i Kamień Filozoficzny",
-    "J.K. Rowling",
-    "Media Rodzina",
-    1997,
-    10,
-  ),
-  createData(
-    3,
-    9788373191723,
-    "Metro 2033",
-    "Dmitry Glukhovsky",
-    "Insignis",
-    2005,
-    7,
-  ),
-  createData(
-    4,
-    9788378398058,
-    "Zbrodnia i Kara",
-    "Fiodor Dostojewski",
-    "Wydawnictwo Literackie",
-    1866,
-    3,
-  ),
-  createData(5, 9788377859455, "1984", "George Orwell", "Amber", 1949, 6),
-  createData(
-    6,
-    9788377580961,
-    "Nocny Patrol",
-    "Sergei Lukyanenko",
-    "Wydawnictwo Fabryka Słów",
-    2006,
-    8,
-  ),
-  createData(
-    7,
-    9788375069990,
-    "Wzgórze Psów",
-    "Andrzej Zimniak",
-    "Iskry",
-    2015,
-    4,
-  ),
-  createData(
-    8,
-    9788374690035,
-    "Pan Tadeusz",
-    "Adam Mickiewicz",
-    "Wydawnictwo Albatros",
-    1834,
-    12,
-  ),
-  createData(
-    9,
-    9788374951168,
-    "Wiedźmin: Ostatnie Życzenie",
-    "Andrzej Sapkowski",
-    "SuperNOWA",
-    1993,
-    9,
-  ),
-  createData(
-    10,
-    9788377792684,
-    "Gra o Tron",
-    "George R.R. Martin",
-    "Zysk i S-ka",
-    1996,
-    11,
-  ),
-  createData(
-    11,
-    9788373196919,
-    "Duma i Uprzedzenie",
-    "Jane Austen",
-    "Znak",
-    1813,
-    5,
-  ),
-  createData(
-    12,
-    9788375470203,
-    "Pan Wołodyjowski",
-    "Henryk Sienkiewicz",
-    "Wydawnictwo Dolnośląskie",
-    1888,
-    8,
-  ),
-  createData(
-    13,
-    9788379883111,
-    "Dracula",
-    "Bram Stoker",
-    "Wydawnictwo MG",
-    1897,
-    7,
-  ),
-  createData(
-    14,
-    9788375342241,
-    "Władca Much",
-    "William Golding",
-    "Zysk i S-ka",
-    1954,
-    6,
-  ),
-  createData(
-    15,
-    9788377690882,
-    "Złodziejka Książek",
-    "Markus Zusak",
-    "Znak",
-    2005,
-    10,
-  ),
-  createData(
-    16,
-    9788375230295,
-    "Niebezpieczne Związki",
-    "Pierre Choderlos de Laclos",
-    "Zysk i S-ka",
-    1782,
-    4,
-  ),
-  createData(
-    17,
-    9788379872245,
-    "Czas Pogardy",
-    "Andrzej Sapkowski",
-    "SuperNOWA",
-    1995,
-    9,
-  ),
-  createData(
-    18,
-    9788379721505,
-    "Podróże Guliwera",
-    "Jonathan Swift",
-    "Wydawnictwo Albatros",
-    1726,
-    6,
-  ),
-  createData(
-    19,
-    9788373194137,
-    "Dziennik Bridget Jones",
-    "Helen Fielding",
-    "Świat Książki",
-    1996,
-    3,
-  ),
-  createData(
-    20,
-    9788366086570,
-    "Hobbit, czyli Tam i Z Powrotem",
-    "J.R.R. Tolkien",
-    "Amber",
-    1937,
-    8,
-  ),
-].sort((a, b) => a.id - b.id);
-
 const validationSchema = Yup.object().shape({
   search: Yup.string().max(255).label("Search"),
 });
 
 export default function CustomPaginationActionsTable() {
+  const { t } = useTranslation();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [books, setBooks] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const apiClient = useApi();
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const result = await apiClient.getBooks();
+      if (result.success) {
+        setBooks(result.data);
+      }
+      setLoading(false);
+    };
+
+    fetchBooks();
+  }, []);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -329,7 +160,9 @@ export default function CustomPaginationActionsTable() {
 
   return (
     <div className="books-list">
-      <h1 style={{ textAlign: "center", color: "#b1a20f" }}>List of Books</h1>
+      <h1 style={{ textAlign: "center", color: "#b1a20f" }}>
+        {t("listOfBooks")}
+      </h1>
       <Box
         sx={{
           display: "flex",
@@ -344,7 +177,7 @@ export default function CustomPaginationActionsTable() {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
             >
-              Library
+              {t("library")}
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Button
@@ -368,20 +201,20 @@ export default function CustomPaginationActionsTable() {
               <Field
                 as={TextField}
                 variant="outlined"
-                label="Search"
+                label={t("search")}
                 name="search"
                 sx={{
                   "& label": {
-                    color: "#808080", // Szary kolor dla etykiety (label) pola
+                    color: "#808080",
                   },
                   "& input": {
-                    color: "#333", // Czarny kolor tekstu pola
+                    color: "#333",
                   },
                   "& input:hover": {
-                    color: "#666", // Ciemnoszary kolor tekstu podczas najechania
+                    color: "#666",
                   },
                   "& input:focus": {
-                    color: "#000", // Czarny kolor tekstu po kliknięciu
+                    color: "#000",
                   },
                 }}
                 error={touched.search && Boolean(errors.search)}
@@ -398,13 +231,13 @@ export default function CustomPaginationActionsTable() {
         >
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell>ISBN</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Publisher</TableCell>
-              <TableCell>Year of publication</TableCell>
-              <TableCell>Number of copies</TableCell>
+              <TableCell>{t("id")}</TableCell>
+              <TableCell>{t("isbn")}</TableCell>
+              <TableCell>{t("title")}</TableCell>
+              <TableCell>{t("author")}</TableCell>
+              <TableCell>{t("publisher")}</TableCell>
+              <TableCell>{t("yearOfPublication")}</TableCell>
+              <TableCell>{t("numberOfCopies")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

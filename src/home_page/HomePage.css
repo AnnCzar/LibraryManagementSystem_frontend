@@ -1,11 +1,9 @@
-
-
 .home-page-container {
     display: flex;
     padding-bottom: 17rem;
     flex-direction: column;
     align-items: center;
-    background-color: #295980; /* kolor tła */
+    background-color: #295980;
 }
 
 .app-bar {
@@ -20,7 +18,7 @@
 }
 
 .form-title {
-    color: #b1a20f; /* Kolor tytułu formularza */
+    color: #b1a20f;
     padding: 2rem;
     text-align: center;
     font-style: oblique !important;
@@ -37,9 +35,9 @@
     justify-content: center;
     gap: 2.5rem;
     align-items: center;
-    background-color: #f8f9fa; /* Kolor tła formularza */
-    border-radius: 10px; /* Zaokrąglenie rogów */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Cień */
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .login-button{
@@ -50,6 +48,6 @@
     color: white !important;
 }
 .MuiMenu-paper {
-    padding: 5px 0; /* odstęp wewnątrz menu */
+    padding: 5px 0;
 }
 

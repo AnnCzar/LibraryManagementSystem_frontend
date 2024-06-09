@@ -21,17 +21,18 @@ const drawerWidth = 280;
 
 export default function DrawerAppBar(props: Props) {
   const { t } = useTranslation();
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  // const apiClient = useApi();
+  // apiClient.getBooks().then((response) => {
+  //   console.log(response);
+  // });
   const tileItems = [
     { text: t("books"), path: "/books" },
-    { text: t("readers"), path: "/readers" },
     { text: t("loans"), path: "/loans" },
     { text: t("reviews"), path: "/reviews" },
-    { text: t("newLoan"), path: "/addLoan" },
-    { text: t("addNewUser"), path: "/addUser" },
-    { text: t("addBook"), path: "/addBook" },
+    { text: t("addReview"), path: "/" },
   ];
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -110,3 +111,5 @@ export default function DrawerAppBar(props: Props) {
     </Box>
   );
 }
+
+export {};

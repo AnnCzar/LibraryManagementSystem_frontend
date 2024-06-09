@@ -23,6 +23,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
+import { useTranslation } from "react-i18next";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -128,6 +129,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function UsersList() {
+  const { t } = useTranslation();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -185,7 +187,9 @@ export default function UsersList() {
 
   return (
     <div className="users-list">
-      <h1 style={{ textAlign: "center", color: "#b1a20f" }}>List of Users</h1>
+      <h1 style={{ textAlign: "center", color: "#b1a20f" }}>
+        {t("listOfUsers")}
+      </h1>
       <Box
         sx={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}
       >
@@ -196,7 +200,7 @@ export default function UsersList() {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
             >
-              Library
+              {t("library")}
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Button
@@ -220,7 +224,7 @@ export default function UsersList() {
               <Field
                 as={TextField}
                 variant="outlined"
-                label="Search"
+                label={t("search")}
                 name="search"
                 error={touched.search && Boolean(errors.search)}
                 helperText={touched.search && errors.search}
@@ -236,10 +240,10 @@ export default function UsersList() {
         >
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Full Name</TableCell>
+              <TableCell>{t("id")}</TableCell>
+              <TableCell>{t("username")}</TableCell>
+              <TableCell>{t("email")}</TableCell>
+              <TableCell>{t("fullName")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -290,8 +294,8 @@ export default function UsersList() {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleEditUser}>Edit User</MenuItem>
-        <MenuItem onClick={handleDeleteUser}>Delete User</MenuItem>
+        <MenuItem onClick={handleEditUser}>{t("editUser")}</MenuItem>
+        <MenuItem onClick={handleDeleteUser}>{t("deleteUser")}</MenuItem>
       </Menu>
     </div>
   );
