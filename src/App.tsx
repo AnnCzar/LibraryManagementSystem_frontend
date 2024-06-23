@@ -4,17 +4,19 @@ import logo from "./logo.svg";
 import "./App.css";
 import LoginForm from "./login-form_NOT_USED/LoginForm";
 import BooksList from "./books_list/BooksList";
-
+import BooksListReader from "./books_list_reader/BooksListReader";
 import BookDetails from "./book_info/BookDetails";
 import HomePage from "./home_page/HomePage";
 import MainWindowLibrarian from "./main_window_librarian/MainWindowLibrarian";
 import MainWindowReader from "./main_window_reader/MainWindowReader";
 import ReadersList from "./readers_list/ReadersList";
 import LoansList from "./loans_list/LoansList";
+import LoansListReader from "./loans_list/LoansListReader";
 import ReviewList from "./review_list/ReviewList";
 import AddLoan from "./add_loan/AddLoan";
 import AddUser from "./add_user/AddUser";
 import AddBook from "./add_book/AddBook";
+import AddReviewPage from "./add_review/AddReview";
 import ApiProvider from "./api/ApiProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
@@ -35,11 +37,13 @@ function App() {
             <Route path="/mainwindowreader" element={<MainWindowReader />} />
             <Route path="/readers" element={<ReadersList />} />
             <Route path="/loans" element={<LoansList />} />
+            <Route path="/loansReader" element={<LoansListReader />} />
             <Route path="/reviews" element={<ReviewList />} />
             <Route path="/addLoan" element={<AddLoan />} />
-            {/*<Route path="" element={<BooksList />} />*/}
             <Route path="/addUser" element={<AddUser />} />
             <Route path="/addBook" element={<AddBook />} />
+            <Route path="/addReview" element={<AddReviewPage />} />
+            <Route path="/bookslist" element={<BooksListReader />} />
             <Route path="/book/:id" element={<BookDetails />} />
             {/*<Route path="*" element={<h1>404</h1>} />*/}
           </Routes>

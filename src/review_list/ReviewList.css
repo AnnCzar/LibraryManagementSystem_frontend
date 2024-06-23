@@ -1,5 +1,5 @@
-.reviews-table {
-    padding: 2rem;
+.loans-list-container {
+    padding-top: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,45 +7,24 @@
     align-items: center;
     background-color: #0e3a48;
     color: #b1a20f;
+    width: 100%;
+    min-height: 100vh;
 }
 
-.reviews-table h1 {
-    padding-top: 5rem;
-    padding-bottom: 2rem;
-    color: #98890b;
-    font-size: 3.5em;
+.app-bar {
+    background-color: #b1a20f !important;
 }
 
-.reviews-table .MuiOutlinedInput-root {
-    background-color: #e1dfdb;
+.search-container {
+    text-align: center;
+    padding-bottom: 3rem;
 }
 
-.reviews-table .MuiFormLabel-root {
-    color: #000000;
-}
-
-.reviews-table .MuiInputBase-input {
+.reviews-table {
+    padding-bottom: 10rem;
+    margin-top: 1rem;
+    background-color: #fff;
     color: #333;
-}
-
-.reviews-table .MuiIconButton-root {
-    color: #333;
-}
-
-.reviews-table .MuiTablePagination-caption {
-    color: #555;
-}
-
-.reviews-table .MuiTablePagination-input {
-    color: #333;
-}
-
-.reviews-table .MuiTablePagination-actions button {
-    color: #333;
-}
-
-.reviews-table .MuiTablePagination-actions button:hover {
-    background-color: #ddd;
 }
 
 .reviews-table .MuiTableHead-root {
@@ -60,6 +39,28 @@
     background-color: #f9f9f9;
 }
 
-.app-bar {
-    background-color: #b1a20f !important;
+.reviews-table .MuiTableCell-root {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.reviews-table .MuiButton-root {
+    margin-top: 8px;
+    background-color: #1976d2;
+    color: white;
+}
+
+.reviews-table .MuiButton-root:hover {
+    background-color: #135ba1;
+}
+
+.reviews-table .MuiTablePagination-root {
+    background-color: #f0f0f0;
+}
+
+.reviews-table .MuiTablePagination-caption {
+    color: #555;
+}
+
+.reviews-table .MuiIconButton-root {
+    color: #333;
 }

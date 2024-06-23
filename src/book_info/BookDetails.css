@@ -12,6 +12,9 @@
 .book-detail-container .content {
     margin: 2rem;
     padding: 2rem;
+
+    justify-content: center; /* Wycentrowanie elementów w poziomie */
+    align-items: center; /* Wycentrowanie elementów w pionie */
     background-color: #0e3a48;
     color: #b1a20f;
 }
@@ -29,13 +32,43 @@
 }
 
 
+.book-detail-container .edit_mode {
+    margin: 2rem;
+    padding: 2rem;
+    background-color: #fdfdfd !important;; /* Kolor tła */
+    /*display: flex;*/
+    justify-content: center;
+    max-width: 650px;
+    margin: auto;
+}
+
 
 .book-detail-container .MuiTableCell-root {
-    color: #333; /* Text color inside the table */
+    color: #333;
 }
 
 
 .book-detail-container .MuiPaper-root {
 
     color: #b1a20f;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.update-button {
+    color: #0e3a48 !important; /* Kolor tekstu */
+    background-color: #fdfdfd !important;; /* Kolor tła */
+    &:hover {
+        background-color: #a2a3bc !important;; /* Kolor tła po najechaniu */
+    }
+}
+.update-button-save {
+    color: #fdfdfd !important; /* Kolor tekstu */
+    background-color: #0e3a48 !important;; /* Kolor tła */
+    &:hover {
+        background-color: #3f6a75 !important;; /* Kolor tła po najechaniu */
+    }
 }

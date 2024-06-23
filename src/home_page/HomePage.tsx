@@ -1,22 +1,24 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { useCallback, useMemo } from "react";
-import * as yup from "yup";
 import { Formik, FormikHelpers } from "formik";
-import { TextField } from "@mui/material";
+import * as yup from "yup";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import LoginIcon from "@mui/icons-material/Login";
 import { useApi } from "../api/ApiProvider";
-import { useTranslation } from "react-i18next";
-
 import "./HomePage.css";
 
 interface FormValues {
@@ -25,9 +27,10 @@ interface FormValues {
 }
 
 function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [language, setLanguage] = React.useState<string>(i18n.language);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,6 +42,13 @@ function HomePage() {
 
   const navigate = useNavigate();
   const apiClient = useApi();
+  const role = localStorage.getItem("role");
+
+  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+    const newLanguage = event.target.value;
+    setLanguage(newLanguage);
+    i18n.changeLanguage(newLanguage);
+  };
 
   const onSubmit = useCallback(
     async (values: FormValues, formik: FormikHelpers<FormValues>) => {
@@ -57,6 +67,16 @@ function HomePage() {
     },
     [apiClient, navigate],
   );
+
+  function proba() {
+    if (role === "ROLE_READER") {
+      navigate("/bookslist");
+    } else if (role === "ROLE_LIBRARIAN") {
+      navigate("/mainwindowlibrarian");
+    } else {
+      navigate("/bookslist");
+    }
+  }
 
   const validationSchema = useMemo(
     () =>
@@ -86,9 +106,19 @@ function HomePage() {
           <Typography variant="h6" component="div" className="title">
             {t("library")}
           </Typography>
-          <Button color="inherit" component={Link} to="/books">
+          <Button color="inherit" onClick={proba}>
             {t("books")}
           </Button>
+          <Select
+            value={language}
+            onChange={handleLanguageChange}
+            className="language-select"
+            variant="standard"
+            sx={{ color: "white", marginLeft: "auto" }}
+          >
+            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="pl">Polski</MenuItem>
+          </Select>
         </Toolbar>
       </AppBar>
       <Menu

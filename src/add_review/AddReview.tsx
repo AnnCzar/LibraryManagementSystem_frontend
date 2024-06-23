@@ -12,12 +12,12 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
-import { LoanDto } from "../api/dto/loan.dto";
 import { useApi } from "../api/ApiProvider";
 import { useTranslation } from "react-i18next";
-import "./AddLoan.css";
+import "./AddReview.css";
+
 interface Book {
   id: number;
   title: string;
@@ -30,15 +30,17 @@ interface Reader {
 
 const validationSchema = Yup.object({
   bookId: Yup.string().required("Wprowadź tytuł książki"),
-  userId: Yup.string().required("Wprowadź nazwę użytkownika"),
-  endDate: Yup.date().nullable().required("Wybierz datę końcową"),
+  rate: Yup.number().required("Wprowadź ocenę").min(1).max(5),
+  comment: Yup.string().required("Wprowadź komentarz"),
 });
 
-const AddLoanPage: React.FC = () => {
+const AddReviewPage: React.FC = () => {
   const { t } = useTranslation();
   const apiClient = useApi();
   const [books, setBooks] = useState<Book[]>([]);
   const [readers, setReaders] = useState<Reader[]>([]);
+  const role = localStorage.getItem("role");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -48,58 +50,58 @@ const AddLoanPage: React.FC = () => {
       }
     };
 
-    const fetchReaders = async () => {
-      const response = await apiClient.getReaders();
-      if (response.success) {
-        setReaders(response.data);
-      }
-    };
-
     fetchBooks();
-    fetchReaders();
   }, [apiClient]);
 
   const formik = useFormik({
     initialValues: {
       bookId: "",
-      userId: "",
-      endDate: null as Date | null,
+      rate: "",
+      comment: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       const selectedBook = books.find((book) => book.title === values.bookId);
-      const selectedReader = readers.find(
-        (reader) => reader.username === values.userId,
-      );
+      const userId = localStorage.getItem("user_id");
 
-      if (!selectedBook || !selectedReader) {
-        console.error("Invalid book or user selected");
+      if (!selectedBook || !userId) {
+        console.error("Invalid book or user ID");
         return;
       }
 
-      const createLoanDto: LoanDto = {
-        book: selectedBook.id.toString(), // Convert number to string
-        user: selectedReader.id.toString(), // Convert number to string
-        loanDate: new Date(),
-        loanEndDate: values.endDate || new Date(),
+      const createReviewDto = {
+        book: selectedBook.id.toString(),
+        user: userId,
+        rate: parseInt(values.rate),
+        comment: values.comment,
+        reviewDate: new Date(),
       };
 
       try {
-        const response = await apiClient.addLoan(createLoanDto);
+        const response = await apiClient.addReview(createReviewDto);
         if (response.success) {
-          console.log("Loan added successfully:", response.data);
+          console.log("Review added successfully:", response.data);
           formik.resetForm();
         } else {
-          console.error("Failed to add loan:", response.statusCode);
+          console.error("Failed to add review:", response.statusCode);
         }
       } catch (error) {
-        console.error("Error adding loan:", error);
+        console.error("Error adding review:", error);
       }
     },
   });
+  function back() {
+    if (role === "ROLE_READER") {
+      return "/mainwindowreader";
+    } else if (role === "ROLE_LIBRARIAN") {
+      return "/mainwindowlibrarian";
+    } else {
+      return "/";
+    }
+  }
 
   return (
-    <Box className="add-loan-container">
+    <Box className="add-review-container">
       <AppBar className="app-bar" component="nav">
         <Toolbar>
           <Typography
@@ -110,21 +112,17 @@ const AddLoanPage: React.FC = () => {
             {t("library")}
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button
-              sx={{ color: "#fff" }}
-              component={Link}
-              to="/mainwindowlibrarian"
-            >
+            <Button sx={{ color: "#fff" }} component={Link} to={back()}>
               <HomeIcon />
             </Button>
           </Box>
         </Toolbar>
       </AppBar>
 
-      <Box className="loan-page">
+      <Box className="review-page">
         <Paper elevation={3} className="form-paper">
           <Typography variant="h4" className="form-title">
-            {t("addLoan")}
+            {t("addReview")}
           </Typography>
           <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={2} justifyContent="center">
@@ -151,54 +149,37 @@ const AddLoanPage: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={8}>
-                <Autocomplete
-                  id="userId"
-                  options={readers.map((reader) => reader.username)}
-                  value={formik.values.userId}
-                  onChange={(event, value) =>
-                    formik.setFieldValue("userId", value)
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={t("username")}
-                      variant="outlined"
-                      fullWidth
-                      error={
-                        formik.touched.userId && Boolean(formik.errors.userId)
-                      }
-                      helperText={formik.touched.userId && formik.errors.userId}
-                    />
-                  )}
+                <TextField
+                  id="rate"
+                  label={t("rate")}
+                  type="number"
+                  fullWidth
+                  variant="outlined"
+                  value={formik.values.rate}
+                  onChange={formik.handleChange}
+                  error={formik.touched.rate && Boolean(formik.errors.rate)}
+                  helperText={formik.touched.rate && formik.errors.rate}
                 />
               </Grid>
               <Grid item xs={8}>
                 <TextField
-                  id="endDate"
-                  label={t("endDate")}
-                  type="date"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  id="comment"
+                  label={t("comment")}
+                  multiline
+                  rows={4}
                   fullWidth
                   variant="outlined"
-                  value={
-                    formik.values.endDate
-                      ? formik.values.endDate.toISOString().substring(0, 10)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    formik.setFieldValue("endDate", new Date(e.target.value))
-                  }
+                  value={formik.values.comment}
+                  onChange={formik.handleChange}
                   error={
-                    formik.touched.endDate && Boolean(formik.errors.endDate)
+                    formik.touched.comment && Boolean(formik.errors.comment)
                   }
-                  helperText={formik.touched.endDate && formik.errors.endDate}
+                  helperText={formik.touched.comment && formik.errors.comment}
                 />
               </Grid>
               <Grid item xs={5}>
-                <Button className="button-loan" fullWidth type="submit">
-                  {t("addLoan")}
+                <Button className="button-review" fullWidth type="submit">
+                  {t("addReview")}
                 </Button>
               </Grid>
             </Grid>
@@ -209,4 +190,4 @@ const AddLoanPage: React.FC = () => {
   );
 };
 
-export default AddLoanPage;
+export default AddReviewPage;

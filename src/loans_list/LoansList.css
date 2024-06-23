@@ -74,16 +74,6 @@
     background-color: #f9f9f9;
 }
 
-/*.loans-list-container button {*/
-/*    background-color: #1976d2;*/
-/*    color: white;*/
-/*    border: none;*/
-/*    padding: 5px 10px;*/
-/*    border-radius: 5px;*/
-/*    cursor: pointer;*/
-/*    transition: background-color 0.3s ease;*/
-/*}*/
-
 .loans-list-container button:hover {
     background-color: #135ba1;
 }

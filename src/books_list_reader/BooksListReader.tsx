@@ -1,4 +1,3 @@
-import "./BooksList.css";
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -18,13 +17,12 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import { TableHead, TextField } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AppBar from "@mui/material/AppBar";
 import HomeIcon from "@mui/icons-material/Home";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useApi } from "../api/ApiProvider";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -121,6 +119,7 @@ export default function CustomPaginationActionsTable() {
   const [books, setBooks] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const apiClient = useApi();
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -153,16 +152,29 @@ export default function CustomPaginationActionsTable() {
     setPage(0);
   };
 
-  const handleDelete = async (id: number) => {
-    const result = await apiClient.deleteBook(id);
-    if (result.success) {
-      setBooks(books.filter((book) => book.id !== id));
-    }
-  };
-
   const filteredRows = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  const proba = (id: number) => {
+    if (role === null) {
+      return "";
+    }
+    if (role === "ROLE_READER") {
+      return `/book/${id}`;
+    }
+    return "";
+  };
+
+  function proba1() {
+    if (role === null) {
+      return "/";
+    }
+    if (role === "ROLE_READER") {
+      return `/mainwindowreader`;
+    }
+    return "";
+  }
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
@@ -192,7 +204,7 @@ export default function CustomPaginationActionsTable() {
               <Button
                 sx={{ color: "#fff" }}
                 component={Link}
-                to="/mainwindowlibrarian"
+                to={proba1()} // Set the value returned by proba as the 'to' prop
               >
                 <HomeIcon />
               </Button>
@@ -247,7 +259,6 @@ export default function CustomPaginationActionsTable() {
               <TableCell>{t("publisher")}</TableCell>
               <TableCell>{t("yearOfPublication")}</TableCell>
               <TableCell>{t("numberOfCopies")}</TableCell>
-              <TableCell>{t("deleteBook")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -260,9 +271,12 @@ export default function CustomPaginationActionsTable() {
             ).map((book) => (
               <TableRow
                 key={book.id}
-                component={Link}
-                to={`/book/${book.id}`}
-                style={{ textDecoration: "none" }}
+                component={role ? Link : "div"} // Render as Link only if role is defined
+                to={proba(book.id)} // Set the value returned by proba as the 'to' prop
+                style={{
+                  textDecoration: "none",
+                  cursor: role ? "pointer" : "default",
+                }} // Change cursor style based on role
               >
                 <TableCell component="th" scope="row">
                   {book.id}
@@ -273,17 +287,6 @@ export default function CustomPaginationActionsTable() {
                 <TableCell>{book.publisher}</TableCell>
                 <TableCell>{book.publishYear}</TableCell>
                 <TableCell>{book.numberCopy}</TableCell>
-                <TableCell>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDelete(book.id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (

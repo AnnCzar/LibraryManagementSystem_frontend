@@ -6,4 +6,5 @@ export class LoginDto {
 export class LoginResponseDto {
   token: string | undefined;
   role?: string;
+  id?: number;
 }

@@ -1,5 +1,5 @@
 .add-user-container {
-    padding: 15rem;
+    padding: 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -12,7 +12,7 @@
     background-color: #b1a20f !important;
 }
 .add-user-page {
-    padding: 15rem;
+    padding: 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,7 +23,7 @@
 }
 
 .form-paper {
-    padding-top: 10rem !important;
+    padding-top: 3rem !important;
     padding-bottom: 5rem !important;
     width: 100%;
     max-width: 800px;

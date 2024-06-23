@@ -8,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { Grid } from "@mui/material";
+import { Grid, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useApi } from "../api/ApiProvider";
 import { useTranslation } from "react-i18next";
@@ -20,9 +20,11 @@ interface Props {
 const drawerWidth = 280;
 
 export default function DrawerAppBar(props: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [language, setLanguage] = React.useState<string>(i18n.language);
+
   const tileItems = [
     { text: t("books"), path: "/books" },
     { text: t("readers"), path: "/readers" },
@@ -35,6 +37,16 @@ export default function DrawerAppBar(props: Props) {
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear(); // Clear localStorage
+  };
+
+  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+    const newLanguage = event.target.value;
+    setLanguage(newLanguage);
+    i18n.changeLanguage(newLanguage);
   };
 
   const container =
@@ -52,11 +64,35 @@ export default function DrawerAppBar(props: Props) {
           >
             {t("library")}
           </Typography>
+          <Select
+            value={language}
+            onChange={handleLanguageChange}
+            className="language-select"
+            variant="standard"
+            sx={{ color: "white", marginLeft: "auto", minWidth: 100 }}
+          >
+            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="pl">Polski</MenuItem>
+          </Select>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button sx={{ color: "#fff" }} component={Link} to="/">
+            <Button
+              sx={{ color: "#fff" }}
+              component={Link}
+              to="/"
+              onClick={handleLogout}
+            >
               {t("logout")}
             </Button>
           </Box>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ display: { sm: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 

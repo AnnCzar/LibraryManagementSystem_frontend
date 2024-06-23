@@ -1,0 +1,65 @@
+
+.books-list {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+    background-color: #0e3a48;
+    color: #b1a20f;
+}
+
+.books-list h1 {
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    color: #98890b;
+    font-size: 3.5em;
+}
+
+.books-list .MuiOutlinedInput-root {
+    background-color: #e1dfdb;
+}
+
+.books-list .MuiFormLabel-root {
+    color: #000000;
+}
+
+.books-list .MuiInputBase-input {
+    color: #333;
+}
+
+.books-list .MuiIconButton-root {
+    color: #333;
+}
+
+.books-list .MuiTablePagination-caption {
+    color: #555;
+}
+
+.books-list .MuiTablePagination-input {
+    color: #333;
+}
+
+.books-list .MuiTablePagination-actions button {
+    color: #333;
+}
+
+.books-list .MuiTablePagination-actions button:hover {
+    background-color: #ddd;
+}
+
+.books-list .MuiTableHead-root {
+    background-color: #ddd;
+}
+
+.books-list .MuiTableCell-head {
+    color: #000;
+}
+
+.books-list .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.app-bar {
+    background-color: #b1a20f !important;
+}

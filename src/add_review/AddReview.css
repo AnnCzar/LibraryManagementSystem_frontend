@@ -1,0 +1,57 @@
+.review-page {
+    padding: 15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+    background-color: #0e3a48;
+    color: #b1a20f;
+}
+
+.form-paper {
+    padding-top: 2rem !important;
+    padding-bottom: 5rem !important;
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.button-loan {
+    background-color: #b1a20f;
+    color: #b1a20f;
+}
+.button-loan:hover {
+    background-color: #98890b;
+}
+.loan-form h4 {
+    flex-direction: column;
+    justify-content: center;
+    color: #98890b;
+}
+
+.loan-form .MuiOutlinedInput-root {
+    background-color: #e1dfdb;
+}
+
+.loan-form .MuiFormLabel-root {
+    color: #000000;
+}
+
+.loan-form .MuiInputBase-input {
+    color: #333;
+}
+
+.loan-form .MuiButton-root {
+    color: #fff;
+    background-color: #b1a20f;
+}
+
+.loan-form .MuiButton-root:hover {
+    background-color: #98890b;
+}
+
+.app-bar {
+    background-color: #b1a20f !important;
+}

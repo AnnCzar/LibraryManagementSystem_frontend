@@ -1,4 +1,5 @@
 import "./LoansList.css";
+
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -6,6 +7,8 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
+  TablePagination,
   TableRow,
   Paper,
   Button,
@@ -20,6 +23,8 @@ import { Link } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useApi } from "../api/ApiProvider";
+
+import TablePaginationActions from "@mui/material/TablePagination/TablePaginationActions";
 import { useTranslation } from "react-i18next";
 
 interface Loan {
@@ -43,15 +48,17 @@ interface Loan {
   loanEndDate: Date;
   returnDate?: Date;
 }
-
 const validationSchema = Yup.object().shape({
   search: Yup.string().max(255).label("Search"),
 });
 
-export default function LoansList() {
+export default function LoansListReader() {
   const { t } = useTranslation();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(true);
   const apiClient = useApi();
 
@@ -59,7 +66,7 @@ export default function LoansList() {
     const fetchLoans = async () => {
       setLoading(true);
       try {
-        const response = await apiClient.getLoans();
+        const response = await apiClient.getLoans(page, rowsPerPage);
         if (response.success && Array.isArray(response.data.loans)) {
           setLoans(
             response.data.loans.map(
@@ -75,6 +82,7 @@ export default function LoansList() {
               }),
             ),
           );
+          setTotalRows(response.data.totalItem);
         } else {
           console.error("Data received is not an array:", response.data);
           setLoans([]);
@@ -87,34 +95,33 @@ export default function LoansList() {
     };
 
     fetchLoans();
-  }, [apiClient]);
+  }, [page, rowsPerPage, apiClient]);
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number,
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleSearch = (values: { search: string }) => {
     setSearchTerm(values.search);
+    setPage(0);
   };
 
-  const handleReturn = async (loanId: number) => {
-    try {
-      const response = await apiClient.updateLoanReturnDate(loanId, new Date());
-      if (response.success) {
-        setLoans((prevLoans) =>
-          prevLoans.map((loan) =>
-            loan.loanid === loanId ? { ...loan, returnDate: new Date() } : loan,
-          ),
-        );
-      } else {
-        console.error("Failed to update return date");
-      }
-    } catch (error) {
-      console.error("Error updating return date:", error);
-    }
-  };
-
-  const filteredRows = loans.filter(
-    (loan) =>
-      loan.book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      loan.user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredRows = loans.filter((loan) =>
+    loan.book.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
 
   return (
     <div className="loans-list-container">
@@ -131,7 +138,7 @@ export default function LoansList() {
             <Button
               sx={{ color: "#fff" }}
               component={Link}
-              to="/mainwindowlibrarian"
+              to="/mainwindowreader"
             >
               <HomeIcon />
             </Button>
@@ -156,16 +163,16 @@ export default function LoansList() {
                 name="search"
                 sx={{
                   "& label": {
-                    color: "#808080",
+                    color: "#808080", // Szary kolor dla etykiety (label) pola
                   },
                   "& input": {
-                    color: "#333",
+                    color: "#333", // Czarny kolor tekstu pola
                   },
                   "& input:hover": {
-                    color: "#666",
+                    color: "#666", // Ciemnoszary kolor tekstu podczas najechania
                   },
                   "& input:focus": {
-                    color: "#000",
+                    color: "#000", // Czarny kolor tekstu po kliknięciu
                   },
                 }}
                 error={touched.search && Boolean(errors.search)}
@@ -176,44 +183,58 @@ export default function LoansList() {
         </Formik>
         <TableContainer component={Paper}>
           <Table
-            sx={{ minWidth: 500 }}
+            sx={{ minWidth: 500, margin: "auto" }}
             aria-label="custom pagination table"
-            className="loans-table"
           >
             <TableHead>
               <TableRow>
                 <TableCell>{t("loanId")}</TableCell>
                 <TableCell>{t("bookTitle")}</TableCell>
-                <TableCell>{t("userName")}</TableCell>
+                <TableCell>{t("username")}</TableCell>
                 <TableCell>{t("loanDate")}</TableCell>
                 <TableCell>{t("loanEndDate")}</TableCell>
                 <TableCell>{t("returnDate")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((loan) => (
-                <TableRow key={loan.loanid}>
-                  <TableCell>{loan.loanid}</TableCell>
-                  <TableCell>{loan.book.title}</TableCell>
-                  <TableCell>{loan.user.username}</TableCell>
-                  <TableCell>{loan.loanDate.toLocaleDateString()}</TableCell>
-                  <TableCell>{loan.loanEndDate.toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    {loan.returnDate ? (
-                      loan.returnDate.toLocaleDateString()
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleReturn(loan.loanid)}
-                      >
-                        Mark as Returned
-                      </Button>
-                    )}
-                  </TableCell>
+              {filteredRows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((loan) => (
+                  <TableRow key={loan.loanid}>
+                    <TableCell>{loan.loanid}</TableCell>
+                    <TableCell>{loan.book.title}</TableCell>
+                    <TableCell>{loan.user.username}</TableCell>
+                    <TableCell>{loan.loanDate.toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {loan.loanEndDate.toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {loan.returnDate
+                        ? loan.returnDate.toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
                 </TableRow>
-              ))}
+              )}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                  colSpan={6}
+                  count={totalRows}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </Box>

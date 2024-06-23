@@ -1,29 +1,50 @@
 import "./ReadersList.css";
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import { TableHead, TextField, Menu, MenuItem, Button } from "@mui/material";
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TablePagination,
+  TableRow,
+  Paper,
+  IconButton,
+  TableHead,
+  TextField,
+  Menu,
+  MenuItem,
+  Button,
+  AppBar,
+  Toolbar,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
+
+import {
+  FirstPage as FirstPageIcon,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage as LastPageIcon,
+  Home as HomeIcon,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
 import { useTranslation } from "react-i18next";
+import { useApi } from "../api/ApiProvider";
+import { useEffect, useState } from "react";
+import { PatchUserDto } from "../api/library-client";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -33,6 +54,11 @@ interface TablePaginationActionsProps {
     event: React.MouseEvent<HTMLButtonElement>,
     newPage: number,
   ) => void;
+}
+interface User {
+  id: number;
+  fullUserName: string;
+  email: string;
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
@@ -105,36 +131,46 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function createData(
-  id: number,
-  username: string,
-  email: string,
-  fullUserName: string,
-) {
-  return { id, username, email, fullUserName };
-}
-
-const users = [
-  createData(1, "jdoe", "jdoe@example.com", "John Doe"),
-  createData(2, "asmith", "asmith@example.com", "Alice Smith"),
-  createData(3, "bjones", "bjones@example.com", "Bob Jones"),
-  createData(4, "ksmith", "ksmith@example.com", "Kevin Smith"),
-  createData(5, "hpotter", "hpotter@hogwarts.edu", "Harry Potter"),
-  createData(6, "hgranger", "hgranger@hogwarts.edu", "Hermione Granger"),
-  createData(7, "rweasley", "rweasley@hogwarts.edu", "Ron Weasley"),
-].sort((a, b) => a.id - b.id);
-
 const validationSchema = Yup.object().shape({
   search: Yup.string().max(255).label("Search"),
 });
 
 export default function UsersList() {
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [selectedUser, setSelectedUser] = React.useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [readers, setReaders] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [deletedUsername, setDeletedUsername] = useState<string | null>(null);
+
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  const [userToEdit, setUserToEdit] = useState<PatchUserDto>({
+    fullName: "",
+    email: "",
+  });
+
+  const [updateSnackbarOpen, setUpdateSnackbarOpen] = useState(false);
+
+  const apiClient = useApi();
+
+  useEffect(() => {
+    const fetchReaders = async () => {
+      const result = await apiClient.getReaders();
+      if (result.success) {
+        setReaders(result.data);
+      }
+      setLoading(false);
+    };
+
+    fetchReaders();
+  }, [apiClient]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -168,18 +204,109 @@ export default function UsersList() {
     setSelectedUser(null);
   };
 
-  const handleDeleteUser = () => {
-    // Implement user deletion logic here
+  const handleDeleteUser = async () => {
+    if (selectedUser === null) return;
+    const readerToDelete = readers.find((reader) => reader.id === selectedUser);
+    if (!readerToDelete) return;
+
+    const result = await apiClient.deleteUser(selectedUser);
+    if (result.success) {
+      setReaders(readers.filter((reader) => reader.id !== selectedUser));
+      setDeletedUsername(readerToDelete.username);
+      setSnackbarOpen(true);
+    }
     handleMenuClose();
+  };
+
+  // const handleEditUser = () => {
+  //   if (selectedUser === null) return;
+  //
+  //   const readerToEdit = readers.find((reader) => reader.id === selectedUser);
+  //   if (readerToEdit) {
+  //     setUserToEdit({ ...readerToEdit, fullName: readerToEdit.fullname });
+  //     setEditDialogOpen(true);
+  //   }
+  //   handleMenuClose();
+  // };
+  // const handleEditUser = () => {
+  //   if (selectedUser === null) return;
+  //
+  //   const readerToEdit = readers.find((reader) => reader.id === selectedUser);
+  //   console.log(readerToEdit);
+  //   if (readerToEdit) {
+  //     handleEditDialogOpen(readerToEdit);
+  //   }
+  //   handleMenuClose();
+  // };
+
+  const handleEditDialogOpen = (user: User) => {
+    setUserToEdit({
+      fullName: user.fullUserName,
+      email: user.email,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
   };
 
   const handleEditUser = () => {
-    // Implement user editing logic here
+    if (selectedUser === null) return;
+
+    const readerToEdit = readers.find((reader) => reader.id === selectedUser);
+    if (readerToEdit) {
+      setSelectedUserId(readerToEdit.id); // Ensure selectedUserId is set here
+      setUserToEdit({
+        fullName: readerToEdit.fullUserName,
+        email: readerToEdit.email,
+      });
+      setEditDialogOpen(true);
+    }
     handleMenuClose();
   };
 
-  const filteredRows = users.filter((user) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+  const handleUpdateUser = async () => {
+    if (!selectedUserId) {
+      console.error("No user ID provided for update.");
+      return;
+    }
+
+    try {
+      const result = await apiClient.updateUserInfo({
+        id: selectedUserId,
+        email: userToEdit.email,
+        fullusername: userToEdit.fullName,
+      });
+
+      if (result.success) {
+        const updatedReaders = readers.map((reader) =>
+          reader.id === selectedUserId
+            ? {
+                ...reader,
+                fullusername: userToEdit.fullName,
+                email: userToEdit.email,
+              }
+            : reader,
+        );
+        setReaders(updatedReaders);
+        setUpdateSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to update user:", error);
+    }
+
+    handleEditDialogClose();
+  };
+
+  const handleUserEditChange =
+    (prop: keyof PatchUserDto) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setUserToEdit({ ...userToEdit, [prop]: event.target.value });
+    };
+
+  const filteredRows = readers.filter((reader) =>
+    reader.username.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const emptyRows =
@@ -253,18 +380,18 @@ export default function UsersList() {
                   page * rowsPerPage + rowsPerPage,
                 )
               : filteredRows
-            ).map((user) => (
+            ).map((reader) => (
               <TableRow
-                key={user.id}
-                onClick={(event) => handleMenuOpen(event, user.id)}
+                key={reader.id}
+                onClick={(event) => handleMenuOpen(event, reader.id)}
                 style={{ cursor: "pointer" }}
               >
                 <TableCell component="th" scope="row">
-                  {user.id}
+                  {reader.id}
                 </TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.fullUserName}</TableCell>
+                <TableCell>{reader.username}</TableCell>
+                <TableCell>{reader.email}</TableCell>
+                <TableCell>{reader.fullusername}</TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -297,6 +424,52 @@ export default function UsersList() {
         <MenuItem onClick={handleEditUser}>{t("editUser")}</MenuItem>
         <MenuItem onClick={handleDeleteUser}>{t("deleteUser")}</MenuItem>
       </Menu>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success">
+          {deletedUsername && `${deletedUsername} został usunięty`}
+        </Alert>
+      </Snackbar>
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+        <DialogTitle>Edit User</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Full Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={userToEdit.fullName}
+            onChange={handleUserEditChange("fullName")}
+          />
+          <TextField
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={userToEdit.email}
+            onChange={handleUserEditChange("email")}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose}>Cancel</Button>
+          <Button onClick={handleUpdateUser}>Save</Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={updateSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setUpdateSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setUpdateSnackbarOpen(false)} severity="success">
+          User updated successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
